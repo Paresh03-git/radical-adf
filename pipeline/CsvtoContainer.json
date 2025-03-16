@@ -1,0 +1,103 @@
+{
+	"name": "CsvtoContainer",
+	"properties": {
+		"activities": [
+			{
+				"name": "csvtocontainer",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "insert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Emp_ID",
+									"type": "String"
+								},
+								"sink": {
+									"path": "EmpId"
+								}
+							},
+							{
+								"source": {
+									"name": "Emp_Name",
+									"type": "String"
+								},
+								"sink": {
+									"path": "EmpName"
+								}
+							},
+							{
+								"source": {
+									"name": "Salary",
+									"type": "String"
+								},
+								"sink": {
+									"path": "EmpSalary"
+								}
+							},
+							{
+								"source": {
+									"name": "Department",
+									"type": "String"
+								},
+								"sink": {
+									"path": "Department"
+								}
+							},
+							{
+								"source": {
+									"name": "Location ",
+									"type": "String"
+								},
+								"sink": {
+									"path": "Location"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbNoSqlContainer",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2025-03-09T06:41:07Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

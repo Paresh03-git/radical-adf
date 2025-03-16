@@ -1,0 +1,52 @@
+{
+	"name": "StreamOutput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Batchstorageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Updated_Transaction_Output.json",
+				"folderPath": "Transaction_Output",
+				"container": "raddatabrickscontainer"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"transId": {
+					"type": "string"
+				},
+				"SKU": {
+					"type": "string"
+				},
+				"Location": {
+					"type": "string"
+				},
+				"Date": {
+					"type": "string"
+				},
+				"sale": {
+					"type": "string"
+				},
+				"EventProcessedUtcTime": {
+					"type": "string"
+				},
+				"PartitionId": {
+					"type": "integer"
+				},
+				"BlobName": {
+					"type": "string"
+				},
+				"BlobLastModifiedUtcTime": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

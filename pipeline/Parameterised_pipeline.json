@@ -1,0 +1,64 @@
+{
+	"name": "Parameterised_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(pipeline().parameters.Environment,'Dev')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Execute_Prod_Pipeline",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Prod_pipeline",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Execute_Dev_Pipeline",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Dev_Pipeline",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"Environment": {
+				"type": "string",
+				"defaultValue": "Dev"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-03-09T06:55:48Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

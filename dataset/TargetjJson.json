@@ -1,0 +1,20 @@
+{
+	"name": "TargetjJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Batchstorageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "Target",
+				"container": "raddatabrickscontainer"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

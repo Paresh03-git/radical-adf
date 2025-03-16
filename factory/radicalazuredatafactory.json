@@ -1,0 +1,9 @@
+{
+	"name": "radicalazuredatafactory",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "49ad670d-bcba-4880-8eb1-d0e667f60b8f",
+		"tenantId": "de041752-3a67-415e-b78d-283f392233da"
+	}
+}

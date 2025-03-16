@@ -1,0 +1,155 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CosmosDbNoSqlContainer2",
+						"type": "DatasetReference"
+					},
+					"name": "InventoryContainer"
+				},
+				{
+					"dataset": {
+						"referenceName": "StreamOutput",
+						"type": "DatasetReference"
+					},
+					"name": "TransactionStream"
+				},
+				{
+					"dataset": {
+						"referenceName": "FeedbackStream",
+						"type": "DatasetReference"
+					},
+					"name": "Feedback"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TargetInvtrans",
+						"type": "DatasetReference"
+					},
+					"name": "TragetSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "InvJoin"
+				},
+				{
+					"name": "TransFeedback"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "SelectInv"
+				},
+				{
+					"name": "AggInvTrans"
+				},
+				{
+					"name": "AggTransFeedback"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKU as string,",
+				"          {Product Name} as string,",
+				"          Quantity as string,",
+				"          {Store Location} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'document') ~> InventoryContainer",
+				"source(output(",
+				"          BlobLastModifiedUtcTime as string,",
+				"          BlobName as string,",
+				"          Date as string,",
+				"          EventProcessedUtcTime as string,",
+				"          Location as string,",
+				"          PartitionId as boolean,",
+				"          SKU as string,",
+				"          sale as short,",
+				"          transId as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> TransactionStream",
+				"source(output(",
+				"          SKU as string,",
+				"          Feedback as string,",
+				"          Sentiments as string,",
+				"          EventProcessedUtcTime as string,",
+				"          PartitionId as integer,",
+				"          BlobName as string,",
+				"          BlobLastModifiedUtcTime as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> Feedback",
+				"InventoryContainer, TransactionStream join(InventoryContainer@SKU == TransactionStream@SKU,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InvJoin",
+				"TransactionStream, Feedback join(TransactionStream@SKU == Feedback@SKU,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> TransFeedback",
+				"TransFeedback select(mapColumn(",
+				"          Location,",
+				"          Date,",
+				"          Feedback,",
+				"          Sentiments,",
+				"          TransactionID = transId,",
+				"          SKU = TransactionStream@SKU",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"InvJoin select(mapColumn(",
+				"          {Product Name},",
+				"          Quantity,",
+				"          sale,",
+				"          SKU = InventoryContainer@SKU,",
+				"          {Store Location},",
+				"          Date,",
+				"          transId",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectInv",
+				"SelectInv aggregate(groupBy(SKU,",
+				"          Date),",
+				"     sale = sum(toInteger(sale))) ~> AggInvTrans",
+				"select1 aggregate(groupBy(SKU,",
+				"          Date),",
+				"     Sentiments = collect(Sentiments)) ~> AggTransFeedback",
+				"AggInvTrans, AggTransFeedback join(AggInvTrans@SKU == AggTransFeedback@SKU,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Emp_ID as string,",
+				"          Emp_Name as string,",
+				"          Salary as string,",
+				"          Department as string,",
+				"          {Location } as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TragetSink"
+			]
+		}
+	}
+}

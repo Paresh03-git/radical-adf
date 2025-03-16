@@ -1,0 +1,46 @@
+{
+	"name": "FeedbackStream",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Batchstorageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "0_cb1dd1c07a9e4766b358e3fb776867fc_1.json",
+				"folderPath": "FeedbackOU",
+				"container": "raddatabrickscontainer"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"SKU": {
+					"type": "string"
+				},
+				"Feedback": {
+					"type": "string"
+				},
+				"Sentiments": {
+					"type": "string"
+				},
+				"EventProcessedUtcTime": {
+					"type": "string"
+				},
+				"PartitionId": {
+					"type": "integer"
+				},
+				"BlobName": {
+					"type": "string"
+				},
+				"BlobLastModifiedUtcTime": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
